@@ -8,8 +8,10 @@ const allUsers = [
   {
     id: 1,
     name: "Amanuel",
+    age: 28,
   },
-  { id: 2, name: "Solomon" },
+  { id: 2, name: "Solomon", age: 25 },
+  { id: 3, name: "Abel", age: 13 },
 ];
 
 app.get("/", (req, res) => {
@@ -17,6 +19,21 @@ app.get("/", (req, res) => {
 });
 
 app.get("/api/users", (req, res) => {
+  console.log(req.query);
+
+  const {
+    query: { filter, value },
+  } = req;
+
+  if (!filter && !value) {
+    return res.send(allUsers);
+  }
+  if (filter && value) {
+    const filteredUsers = allUsers.filter((user) => {
+      return user[filter].toLowerCase().includes(value.toLowerCase());
+    });
+    return res.send(filteredUsers);
+  }
   res.send(allUsers);
 });
 
@@ -26,9 +43,9 @@ app.get("/api/users/:id", (req, res) => {
   if (isNaN(parsedId)) {
     return res.status(400).send({ msg: "Bad Request.InvalidId" });
   }
-  
+
   const findUser = allUsers.find((user) => {
-  return  user.id === parsedId;
+    return user.id === parsedId;
   });
 
   console.log(findUser);
