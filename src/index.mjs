@@ -2,6 +2,8 @@ import express from "express";
 
 const app = express();
 
+app.use(express.json())
+
 const PORT = process.env.PORT | 3000;
 
 const allUsers = [
@@ -37,11 +39,20 @@ app.get("/api/users", (req, res) => {
   res.send(allUsers);
 });
 
+app.post("/api/users",(req,res)=>{
+  // console.log(req.body);
+
+  const {body } = req;
+  const newUser={id:allUsers[allUsers.length-1].id+1,...body};
+  allUsers.push(newUser);
+  return res.status(201).send(newUser);
+})
+
 app.get("/api/users/:id", (req, res) => {
   const parsedId = parseInt(req.params.id);
   console.log(parsedId);
   if (isNaN(parsedId)) {
-    return res.status(400).send({ msg: "Bad Request.InvalidId" });
+    return res.status(400).send({ msg: "Bad Request.Invalid Id" });
   }
 
   const findUser = allUsers.find((user) => {
