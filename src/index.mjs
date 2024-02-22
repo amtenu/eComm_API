@@ -99,3 +99,21 @@ app.put("/api/users/:id", (req, res) => {
 
   return res.sendStatus(200);
 });
+
+
+app.patch("/api/users/:id",(req,res)=>{
+  const {
+    body,
+    params: { id },
+  } = req;
+  const parsedId=parseInt(id);
+  if (isNaN === parsedId) return res.sendStatus(400);
+  const userDataIndex = allUsers.findIndex((user) => user.id === parsedId);
+  if (userDataIndex === -1) return res.sendStatus(404);
+  
+  allUsers[userDataIndex]={...allUsers[userDataIndex],...body};
+
+  return res.sendStatus(200);
+
+
+})
