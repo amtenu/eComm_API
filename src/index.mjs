@@ -117,3 +117,21 @@ app.patch("/api/users/:id",(req,res)=>{
 
 
 })
+
+
+app.delete("/api/users/:id",(req,res)=>{
+  const {
+    params: { id },
+  } = req;
+  const parsedId=parseInt(id);
+  if (isNaN === parsedId) return res.sendStatus(400);
+  
+  const userDataIndex = allUsers.findIndex((user) => user.id === parsedId);
+  if (userDataIndex === -1) return res.sendStatus(404);
+ 
+  allUsers.splice(userDataIndex,1);
+
+  return res.sendStatus(200);
+
+
+})
