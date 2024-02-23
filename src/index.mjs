@@ -1,6 +1,6 @@
 import express from "express";
 import bodyParser from "body-parser";
-import { query, validationResult, body } from "express-validator";
+import { query, validationResult, body, matchedData } from "express-validator";
 
 const app = express();
 
@@ -53,7 +53,13 @@ app.get(
     .withMessage("Must be between 3 & 15."),
   (req, res) => {
     const result = validationResult(req); //grab validation errors by query
-    console.log(result);
+    if (!result.isEmpty()) {
+      return res.status(400).send({ errors: result.array() });
+    }
+
+    const validatedDate = matchedData(req);
+    console.log(validatedDate);
+
     const {
       query: { filter, value },
     } = req;
