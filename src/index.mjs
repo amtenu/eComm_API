@@ -1,16 +1,14 @@
 import express from "express";
 import bodyParser from "body-parser";
 
-
-import usersRouter from "./routes/users.mjs";
-
-
+import router from './routes/index.mjs';
 const app = express();
 
 app.use(bodyParser.json());
 
 app.use(express.json());
-app.use(usersRouter);
+app.use(router);
+
 
 const PORT = process.env.PORT | 3000;
 
