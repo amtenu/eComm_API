@@ -1,6 +1,6 @@
 import express from "express";
 import bodyParser from "body-parser";
-import { query, validationResult } from "express-validator";
+import { query, validationResult, body } from "express-validator";
 
 const app = express();
 
@@ -71,14 +71,27 @@ app.get(
   }
 );
 
-app.post("/api/users", (req, res) => {
-  // console.log(req.body);
+app.post(
+  "/api/users",
+  body("username")
+    .notEmpty()
+    .withMessage("Not be empty")
+    .isString()
+    .withMessage("Must be a String")
+    .isLength({ min: 2, max: 32 })
+    .withMessage("username must be between 2 and 32"),
+  (req, res) => {
+    const result = validationResult(req);
+    console.log(result);
 
-  const { body } = req;
-  const newUser = { id: allUsers[allUsers.length - 1].id + 1, ...body };
-  allUsers.push(newUser);
-  return res.status(201).send(newUser);
-});
+    // console.log(req.body);
+
+    const { body } = req;
+    const newUser = { id: allUsers[allUsers.length - 1].id + 1, ...body };
+    allUsers.push(newUser);
+    return res.status(201).send(newUser);
+  }
+);
 
 app.get("/api/users/:id", (req, res) => {
   const parsedId = parseInt(req.params.id);
