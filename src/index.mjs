@@ -7,6 +7,13 @@ app.use(bodyParser.json());
 
 app.use(express.json());
 
+const loggingMiddleware=(req,res,next)=>{
+  console.log(`${req.method},${req.url}`);
+  next();
+}
+
+
+
 const PORT = process.env.PORT | 3000;
 
 const allUsers = [
@@ -19,7 +26,20 @@ const allUsers = [
   { id: 3, name: "Abel", age: 13 },
 ];
 
-app.get("/", (req, res) => {
+const findIndexUserByID = (req, res, next) => {
+  const {
+    params: { id },
+  } = req;
+  const parsedId = parseInt(id);
+  if (isNaN === parsedId) return res.sendStatus(400);
+
+  const userDataIndex = allUsers.findIndex((user) => user.id === parsedId);
+  if (userDataIndex === -1) return res.sendStatus(404);
+  req.userDataIndex = userDataIndex;
+  next();
+};
+
+app.get("/",loggingMiddleware, (req, res) => {
   res.status(201).send("Hello world");
 });
 
@@ -83,55 +103,26 @@ app.listen(PORT, () => {
   console.log(`Running on Port ${PORT}`);
 });
 
-app.put("/api/users/:id", (req, res) => {
-  const {
-    body,
-    params: { id },
-  } = req;
-  const parsedId = parseInt(id);
+app.put("/api/users/:id", findIndexUserByID, (req, res) => {
+  const { body, userDataIndex } = req;
 
-  if (isNaN === parsedId) return res.sendStatus(400);
-  const userDataIndex = allUsers.findIndex((user) => user.id === parsedId);
-
-  if (userDataIndex === -1) return res.sendStatus(404);
-
-  allUsers[userDataIndex] = { id: parsedId, ...body }; //leave id and change everything
+  allUsers[userDataIndex] = { id: allUsers[userDataIndex].id, ...body }; //leave id and change everything
 
   return res.sendStatus(200);
 });
 
+app.patch("/api/users/:id", findIndexUserByID, (req, res) => {
+  const { body, userDataIndex } = req;
 
-app.patch("/api/users/:id",(req,res)=>{
-  const {
-    body,
-    params: { id },
-  } = req;
-  const parsedId=parseInt(id);
-  if (isNaN === parsedId) return res.sendStatus(400);
-  const userDataIndex = allUsers.findIndex((user) => user.id === parsedId);
-  if (userDataIndex === -1) return res.sendStatus(404);
-  
-  allUsers[userDataIndex]={...allUsers[userDataIndex],...body};
+  allUsers[userDataIndex] = { ...allUsers[userDataIndex], ...body };
 
   return res.sendStatus(200);
+});
 
-
-})
-
-
-app.delete("/api/users/:id",(req,res)=>{
+app.delete("/api/users/:id", (req, res) => {
   const {
-    params: { id },
+    userDataIndex,
   } = req;
-  const parsedId=parseInt(id);
-  if (isNaN === parsedId) return res.sendStatus(400);
-  
-  const userDataIndex = allUsers.findIndex((user) => user.id === parsedId);
-  if (userDataIndex === -1) return res.sendStatus(404);
- 
-  allUsers.splice(userDataIndex,1);
-
+  allUsers.splice(userDataIndex, 1);
   return res.sendStatus(200);
-
-
-})
+});
