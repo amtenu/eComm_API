@@ -1,5 +1,6 @@
 import express from "express";
 import bodyParser from "body-parser";
+import { query, validationResult } from "express-validator";
 
 const app = express();
 
@@ -7,12 +8,10 @@ app.use(bodyParser.json());
 
 app.use(express.json());
 
-const loggingMiddleware=(req,res,next)=>{
+const loggingMiddleware = (req, res, next) => {
   console.log(`${req.method},${req.url}`);
   next();
-}
-
-
+};
 
 const PORT = process.env.PORT | 3000;
 
@@ -39,28 +38,38 @@ const findIndexUserByID = (req, res, next) => {
   next();
 };
 
-app.get("/",loggingMiddleware, (req, res) => {
+app.get("/", loggingMiddleware, (req, res) => {
   res.status(201).send("Hello world");
 });
 
-app.get("/api/users", (req, res) => {
-  console.log(req.query);
+app.get(
+  "/api/users",
+  query("filter")
+    .isString()
+    .withMessage("Must have filter ")
+    .notEmpty()
+    .withMessage("Must not be empty")
+    .isLength({ min: 3, max: 15 })
+    .withMessage("Must be between 3 & 15."),
+  (req, res) => {
+    const result = validationResult(req); //grab validation errors by query
+    console.log(result);
+    const {
+      query: { filter, value },
+    } = req;
 
-  const {
-    query: { filter, value },
-  } = req;
-
-  if (!filter && !value) {
-    return res.send(allUsers);
+    if (!filter && !value) {
+      return res.send(allUsers);
+    }
+    if (filter && value) {
+      const filteredUsers = allUsers.filter((user) => {
+        return user[filter].toLowerCase().includes(value.toLowerCase());
+      });
+      return res.send(filteredUsers);
+    }
+    res.send(allUsers);
   }
-  if (filter && value) {
-    const filteredUsers = allUsers.filter((user) => {
-      return user[filter].toLowerCase().includes(value.toLowerCase());
-    });
-    return res.send(filteredUsers);
-  }
-  res.send(allUsers);
-});
+);
 
 app.post("/api/users", (req, res) => {
   // console.log(req.body);
@@ -82,7 +91,7 @@ app.get("/api/users/:id", (req, res) => {
     return user.id === parsedId;
   });
 
-  console.log(findUser);
+  //console.log(findUser);
 
   if (!findUser) return res.sendStatus(404);
 
@@ -120,9 +129,7 @@ app.patch("/api/users/:id", findIndexUserByID, (req, res) => {
 });
 
 app.delete("/api/users/:id", (req, res) => {
-  const {
-    userDataIndex,
-  } = req;
+  const { userDataIndex } = req;
   allUsers.splice(userDataIndex, 1);
   return res.sendStatus(200);
 });
