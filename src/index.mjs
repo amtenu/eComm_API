@@ -1,18 +1,20 @@
-import express from "express";
+import express, { response } from "express";
 import bodyParser from "body-parser";
+import cookieParser from "cookie-parser";
 
-import router from './routes/index.mjs';
+import router from "./routes/index.mjs";
 const app = express();
 
 app.use(bodyParser.json());
 
 app.use(express.json());
+app.use(cookieParser());
 app.use(router);
-
 
 const PORT = process.env.PORT | 3000;
 
 app.get("/", (req, res) => {
+  res.cookie("cookie_name ", "cookie_value", { maxAge: 60000 });
   res.status(201).send("Hello world");
 });
 
