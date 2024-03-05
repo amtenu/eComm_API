@@ -2,6 +2,7 @@ import express, { response } from "express";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import session from "express-session";
+import passport from "passport";
 
 import router from "./routes/index.mjs";
 import { mockUsers } from "./utils/constants.mjs";
@@ -21,6 +22,13 @@ app.use(
     },
   })
 );
+
+
+//Crtical that Passport be defined after session initialization and before router
+
+app.use (passport.initialize());
+app.use(passport.session());
+
 app.use(router);
 
 const PORT = process.env.PORT | 3000;
