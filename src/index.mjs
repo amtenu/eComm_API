@@ -1,6 +1,7 @@
 import express, { response } from "express";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
+import session from "express-session";
 
 import router from "./routes/index.mjs";
 const app = express();
@@ -9,6 +10,16 @@ app.use(bodyParser.json());
 
 app.use(express.json());
 app.use(cookieParser());
+app.use(
+  session({
+    secret: "Amanuel",
+    saveUninitialized: false,
+    resave: false,
+    cookie: {
+      maxAge: 60000 * 60,
+    },
+  })
+);
 app.use(router);
 
 const PORT = process.env.PORT | 3000;
