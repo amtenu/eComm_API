@@ -22,5 +22,7 @@ export const products = [
 ];
 
 export const mockUsers=[
-  {id:1,username:"amanuel",password:"1234"}
+  {id:1,username:"amanuel",password:"1234"},
+  {id:2,username:"solomon",password:"1234"},
+  {id:3,username:"danu",password:"1234"}
 ]

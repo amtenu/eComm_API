@@ -3,6 +3,7 @@ import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import session from "express-session";
 import passport from "passport";
+import "./strategies/localStrategies.mjs"
 
 import router from "./routes/index.mjs";
 import { mockUsers } from "./utils/constants.mjs";
@@ -31,6 +32,17 @@ app.use(passport.session());
 
 app.use(router);
 
+app.post("/api/auth2",passport.authenticate('local'),(req,res)=>{
+  res.sendStatus(200);
+})//app.post("/api/auth2",passport.authenticate('google'))
+
+
+app.get("/api/auth2/status",(req,res)=>{
+  console.log(req.user);
+
+  return req.user ? res.send(req.user) : res.sendStatus(401);
+
+})
 const PORT = process.env.PORT | 3000;
 
 app.get("/", (req, res) => {
