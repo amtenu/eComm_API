@@ -46,6 +46,12 @@ app.post("/api/auth", (req, res) => {
   return res.status(200).send(findUser);
 });
 
+app.get("/api/auth/status", (req, res) => {
+  return req.session.id
+    ? res.status(200).send(req.session.user)
+    : res.status(401).send({ msg: "Not autenticated" });
+});
+
 app.listen(PORT, () => {
   console.log(`Running on Port ${PORT}`);
 });
