@@ -14,6 +14,7 @@ const router = Router();
 router.get(
   "/api/users",
   query("filter")
+    .optional()
     .isString()
     .withMessage("Must have filter")
     .notEmpty()
