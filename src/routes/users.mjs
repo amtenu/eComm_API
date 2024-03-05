@@ -22,6 +22,13 @@ router.get(
     .isLength({ min: 3, max: 15 })
     .withMessage("Must be between 3 & 15."),
   (req, res) => {
+      req.sessionStore.get(req.session.id, (err, sessionData) => {
+        if (err) {
+          throw err;
+        }
+        console.log(sessionData);
+      }
+    );
     const result = validationResult(req); // grab validation errors by query
     if (!result.isEmpty()) {
       return res.status(400).send({ errors: result.array() });
