@@ -3,7 +3,7 @@ import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import session from "express-session";
 import passport from "passport";
-import "./strategies/localStrategies.mjs"
+import "./strategies/localStrategies.mjs";
 
 import router from "./routes/index.mjs";
 import { mockUsers } from "./utils/constants.mjs";
@@ -24,25 +24,31 @@ app.use(
   })
 );
 
-
 //Crtical that Passport be defined after session initialization and before router
 
-app.use (passport.initialize());
+app.use(passport.initialize());
 app.use(passport.session());
 
 app.use(router);
 
-app.post("/api/auth2",passport.authenticate('local'),(req,res)=>{
+app.post("/api/auth2", passport.authenticate("local"), (req, res) => {
   res.sendStatus(200);
-})//app.post("/api/auth2",passport.authenticate('google'))
+}); //app.post("/api/auth2",passport.authenticate('google'))
 
-
-app.get("/api/auth2/status",(req,res)=>{
+app.get("/api/auth2/status", (req, res) => {
   console.log(req.user);
 
   return req.user ? res.send(req.user) : res.sendStatus(401);
+});
 
-})
+app.post("/api/auth2/logout", (req, res) => {
+  if (!req.user) return res.sendStatus(401);
+  req.logOut((err) => {
+    if (err) return res.sendStatus(400);
+    res.sendStatus(200);
+  });
+});
+
 const PORT = process.env.PORT | 3000;
 
 app.get("/", (req, res) => {
@@ -73,7 +79,6 @@ app.get("/api/auth/status", (req, res) => {
 });
 
 app.post("/api/cart", (req, res) => {
-  
   if (!req.session.user) return res.sendStatus(401);
   const { body: item } = req;
 
@@ -89,11 +94,9 @@ app.post("/api/cart", (req, res) => {
 });
 
 app.get("/api/cart", (req, res) => {
-  
   if (!req.session.user) return res.sendStatus(401);
-  
-  return res.send(req.session.cart ?? []);
 
+  return res.send(req.session.cart ?? []);
 });
 
 app.listen(PORT, () => {
