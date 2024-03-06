@@ -12,8 +12,8 @@ const app = express();
 
 mongoose.connect("mongodb://localhost/ecomDb")
 
-.then(()=>(Console.log("Connected to Database")))
-.catch((err)=>(console.log(`Error:${err}`)))
+.then(()=>console.log("Connected to Database"))
+.catch((err)=>console.log(`Error:${err}`))
 
 app.use(bodyParser.json());
 
