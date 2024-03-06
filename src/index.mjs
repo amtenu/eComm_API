@@ -3,11 +3,17 @@ import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 import session from "express-session";
 import passport from "passport";
+import mongoose from "mongoose";
 import "./strategies/localStrategies.mjs";
 
 import router from "./routes/index.mjs";
 import { mockUsers } from "./utils/constants.mjs";
 const app = express();
+
+mongoose.connect("mongodb://localhost/ecomDb")
+
+.then(()=>(Console.log("Connected to Database")))
+.catch((err)=>(console.log(`Error:${err}`)))
 
 app.use(bodyParser.json());
 
